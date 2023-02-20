@@ -1,8 +1,8 @@
---Setting up the working directory--
+##Setting up the working directory##
 
 setwd("C:/Users/Lenovo/Downloads/Thesis")
 
---loading the dataset--
+##loading the dataset##
 dataset <- read.csv("Audiomoth acoustics and water parameter_Master table.csv")
 bat_activity <- dataset$total.bat.activity
 species_richness <- dataset$species.richness
@@ -15,7 +15,7 @@ cover_trees<-dataset$cover_trees
 cover_bushes<-dataset$cover_bushes
 cover_float<-dataset$cover_float
 cover_upright<-dataset$cover_upright
-cover_upright<-as.numeric(cover_upright) -- changing the data into numeric--
+cover_upright<-as.numeric(cover_upright) ##changing the data into numeric##
 grassland_30m<-dataset$grassland_30m
 cropland_30m<-dataset$crop_30m
 
@@ -31,14 +31,14 @@ salinity<-dataset$salinity
 impervious_200m<-dataset$impervious_200m
 impervious_200m<-as.numeric(impervious_200m)
 
---checking the summary of the dataset--
+##checking the summary of the dataset##
 output <- summary(dataset)
 print(output)
 
---Creating new dataframe from existing column--
+##Creating new dataframe from existing column##
 df<-dataset[,c('mean_radiance', 'dist_citycenter','impervious_200m', 'insect_abundance', 'insect_orderrichness', 'cover_tress','cover_bushes', 'cover_float', 'cover_upright', 'size.category', 'salinity, 'oxygen_content', 'total_phosphate', 'nitrate', 'carbon')]
 
--- checking the colineratity of the data--
+##checking the colineratity of the data##
 cor(df, method="spearman")
 corrplot(df)
 
@@ -54,11 +54,12 @@ Eser<-dataset$Eser
 hist(bat_activity)
 hist(species_richness)
 
-library(ggplot2) --(getting the ggplot2 pacakage for plotting)--
+library(ggplot2) ##getting the ggplot2 pacakage for plotting##
 require(ggiraph)
 require(ggiraphExtra)
 require(plyr)
-#water parameters(total activity, drop1 method)
+
+##to test the effect of the above variables on bat species richness, total and single-species activity by fitting generalized linear models##
 
 M1<-glm(bat_activity~insect_abundance+size_category+cover_float+cover_upright+oxygen_content+total_phosphate+nitrate+carbon+temp+rain+wind, family="quasipoisson")
 res1 <- residuals(M1)
@@ -67,12 +68,12 @@ summary(M1)
 plot(M1)
 drop1(M1, test="F")
 
---kept on droping until all the parametrs were significant)
---Then used the ANOVA command to compare the models with an analysis of deviance--
+##kept on droping until all the parametrs were significant##
+##Then used the ANOVA command to compare the models with an analysis of deviance##
 
 anova (M1, M2, M3, M4, M5, M6,M7, test= "F")
 
---Trying out different plotting method--
+##Trying out different plotting method##
 ggplot(dataset,aes(y=bat_activity,x=insect_abundance))+geom_point()+geom_smooth(method="glm", grid="False")
 
 mydf <- ggpredict(M2, term="size_category", show.data = TRUE)
@@ -82,9 +83,10 @@ ggPredict(M7,se=TRUE,interactive=TRUE)
 mydf <- ggpredict(M7, term="insect_abundance")
 plot(mydf)
 
----CONTNIUED THE SAME MODELING METHOD FOR SPECIES RICHNESS AND BAT ACTIVITY AMONG OTHER PARAMETERS--
+###CONTNIUED THE SAME MODELING METHOD FOR SPECIES RICHNESS AND BAT ACTIVITY AMONG OTHER PARAMETERS###
                                                                  
---TRYING OTHER MODELING METHOD--
+##TRYING OTHER MODELING METHOD##
+
 m.nb<-glm.nb(species_richness~insect_abundance+cover_float+cover_upright+salinity+oxygen_content+phosphate+nitrate+carbon+temp+wind+rain, link="log", data = dataset)
 resm.nb <- residuals(m.nb)
 hist(resm.nb)
@@ -104,7 +106,7 @@ summary(m.z)
 plot(m.z)
 
 
---for model comparison--
+##for model comparison##
 mean.var.plot = function(M12,M1){
   xb = predict(M1)
   g = cut(xb, breaks=unique(quantile(xb,seq(0,1,0.1))))
